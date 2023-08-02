@@ -1,7 +1,9 @@
 package com.xmcy.test.recommendation.service.service;
 
 import com.xmcy.test.recommendation.service.model.CryptoData;
+import com.xmcy.test.recommendation.service.model.CryptoNormalizedPricesData;
 
+import java.util.List;
 import java.util.stream.Stream;
 
 public interface DataAnalysisService {
@@ -12,4 +14,6 @@ public interface DataAnalysisService {
     CryptoData getLatest(Stream<CryptoData> dataStream);
 
     CryptoData getOldest(Stream<CryptoData> dataStream);
+
+    List<CryptoNormalizedPricesData> getOrderedNormalizedRange(Stream<CryptoData>... dataStream);
 }

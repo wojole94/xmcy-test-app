@@ -18,6 +18,6 @@ public class CryptoData {
     private String symbol;
 
     @CsvBindByName
-    private Float price;
+    private Double price;
 
 }
