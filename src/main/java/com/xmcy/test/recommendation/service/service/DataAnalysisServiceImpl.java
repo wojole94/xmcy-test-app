@@ -4,9 +4,8 @@ import com.xmcy.test.recommendation.service.model.CryptoData;
 import com.xmcy.test.recommendation.service.model.CryptoNormalizedPricesData;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -47,6 +46,35 @@ public class DataAnalysisServiceImpl implements DataAnalysisService{
         return analyzedData;
     }
 
+    public CryptoNormalizedPricesData getMaxNormalizedRangeForParticularDay(LocalDateTime expectedDate, Stream<CryptoData>... dataStream){
+        LocalDateTime from = LocalDateTime.of(
+                expectedDate.getYear(),
+                expectedDate.getMonth(),
+                expectedDate.getDayOfMonth(),
+                0,
+                0,
+                0);
+
+        LocalDateTime to = LocalDateTime.of(
+                expectedDate.getYear(),
+                expectedDate.getMonth(),
+                expectedDate.getDayOfMonth(),
+                0,
+                0,
+                0)
+                .plusDays(1);
+
+        Stream<CryptoData> outfilteredData = concatStreams(dataStream)
+                .filter(entry -> entry.getTimestamp().isAfter(from)
+                        && entry.getTimestamp().isBefore(to));
+        return getOrderedNormalizedRange(outfilteredData)
+                .stream()
+                .max(Comparator.comparing(CryptoNormalizedPricesData::getNormalizedPrice))
+                .orElseThrow();
+    }
+
+
+
     private Stream<CryptoData> concatStreams(Stream<CryptoData>[] dataStream) {
         return Stream.of(dataStream)
                 .reduce(Stream::concat)
@@ -54,10 +82,7 @@ public class DataAnalysisServiceImpl implements DataAnalysisService{
     }
 
     private Double calculatePriceNormalizedRange(Stream<CryptoData> dataStream){
-        var stats = dataStream.collect(Collectors.summarizingDouble(data -> data.getPrice()));
-        double minPrice = stats.getMin();
-        double maxPrice = stats.getMax();
-
-        return (maxPrice - minPrice) / minPrice;
+        DoubleSummaryStatistics stats = dataStream.collect(Collectors.summarizingDouble(CryptoData::getPrice));
+        return (stats.getMax() - stats.getMin()) / stats.getMin();
     }
 }

@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
-@Component
 @RequiredArgsConstructor
 public class CryptoCsvFileReader implements CryptoInputDataReader {
 

@@ -6,7 +6,7 @@ import com.xmcy.test.recommendation.service.model.CryptoNormalizedPricesData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -27,7 +27,7 @@ public class DataAnalysisServiceImplTest {
         CryptoData result = daService.getMaxPrice(generateBTCTypeTestData());
 
         assertCryptoDataNotNull(result);
-        assertEquals(10000D, result.getPrice());
+        assertEquals(11234D, result.getPrice());
     }
 
     @Test
@@ -35,7 +35,7 @@ public class DataAnalysisServiceImplTest {
         CryptoData result = daService.getMinPrice(generateBTCTypeTestData());
 
         assertCryptoDataNotNull(result);
-        assertEquals(10D, result.getPrice());
+        assertEquals(11D, result.getPrice());
     }
 
     @Test
@@ -43,7 +43,7 @@ public class DataAnalysisServiceImplTest {
         CryptoData result = daService.getOldest(generateBTCTypeTestData());
 
         assertCryptoDataNotNull(result);
-        assertEquals(10D, result.getPrice());
+        assertEquals(11D, result.getPrice());
     }
 
     @Test
@@ -51,64 +51,67 @@ public class DataAnalysisServiceImplTest {
         CryptoData result = daService.getLatest(generateBTCTypeTestData());
 
         assertCryptoDataNotNull(result);
-        assertEquals(100D, result.getPrice());
+        assertEquals(112D, result.getPrice());
     }
 
     @Test
-    void getOrderedNormalizedRange_whenDataAvailable_selectLatestRecord() {
+    void getOrderedNormalizedRange_whenDataAvailable_getNormalizedValuesPerCrypto() {
         List<CryptoNormalizedPricesData> result = daService.getOrderedNormalizedRange(generateBTCTypeTestData(), generateDOGETypeTestData(), generateETHTypeTestData());
-        assertNotNull(result);
+
+        result.forEach(this::assertCryptoNormalizedPricesDataNotNull);
+    }
+
+    @Test
+    void getMaxNormalizedRangeForParticularDay_whenDataAvailable_selectLatestRecord() {
+        LocalDateTime expectedDate = LocalDateTime.of(2022,2,3,0,0);
+
+        CryptoNormalizedPricesData result = daService.getMaxNormalizedRangeForParticularDay(expectedDate, generateDOGETypeTestData(), generateBTCTypeTestData(), generateETHTypeTestData());
+
+        assertCryptoNormalizedPricesDataNotNull(result);
     }
 
     private Stream<CryptoData> generateBTCTypeTestData() {
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.setTimeInMillis(101);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTimeInMillis(102);
-        Calendar calendar3 = Calendar.getInstance();
-        calendar3.setTimeInMillis(103);
-        Calendar calendar4 = Calendar.getInstance();
-        calendar4.setTimeInMillis(104);
-        return List.of(
-                CryptoData.builder().price(11D).symbol("BTC").timestamp(calendar1).build(),
-                CryptoData.builder().price(1123D).symbol("BTC").timestamp(calendar2).build(),
-                CryptoData.builder().price(11234D).symbol("BTC").timestamp(calendar3).build(),
-                CryptoData.builder().price(112D).symbol("BTC").timestamp(calendar4).build()
-        ).stream();
+        LocalDateTime date1 = LocalDateTime.of(2022,2,3,1,0);
+        LocalDateTime date2 = LocalDateTime.of(2022,2,3,2,0);
+        LocalDateTime date3 = LocalDateTime.of(2022,2,3,3,0);
+        LocalDateTime date4 = LocalDateTime.of(2022,2,3,4,0);
+
+        return Stream.of(
+                CryptoData.builder().price(11D).symbol("BTC").timestamp(date1).build(),
+                CryptoData.builder().price(1123D).symbol("BTC").timestamp(date2).build(),
+                CryptoData.builder().price(11234D).symbol("BTC").timestamp(date3).build(),
+                CryptoData.builder().price(112D).symbol("BTC").timestamp(date4).build()
+        );
     }
 
     private Stream<CryptoData> generateDOGETypeTestData() {
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.setTimeInMillis(101);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTimeInMillis(102);
-        Calendar calendar3 = Calendar.getInstance();
-        calendar3.setTimeInMillis(103);
-        Calendar calendar4 = Calendar.getInstance();
-        calendar4.setTimeInMillis(104);
-        return List.of(
-                CryptoData.builder().price(21D).symbol("DOGE").timestamp(calendar1).build(),
-                CryptoData.builder().price(2123D).symbol("DOGE").timestamp(calendar2).build(),
-                CryptoData.builder().price(21234D).symbol("DOGE").timestamp(calendar3).build(),
-                CryptoData.builder().price(212D).symbol("DOGE").timestamp(calendar4).build()
-        ).stream();
+
+        LocalDateTime date1 = LocalDateTime.of(2022,2,3,1,0);
+        LocalDateTime date2 = LocalDateTime.of(2022,2,3,2,0);
+        LocalDateTime date3 = LocalDateTime.of(2022,2,3,3,0);
+        LocalDateTime date4 = LocalDateTime.of(2022,2,3,4,0);
+
+        return Stream.of(
+                CryptoData.builder().price(21D).symbol("DOGE").timestamp(date1).build(),
+                CryptoData.builder().price(2123D).symbol("DOGE").timestamp(date2).build(),
+                CryptoData.builder().price(21234D).symbol("DOGE").timestamp(date3).build(),
+                CryptoData.builder().price(212D).symbol("DOGE").timestamp(date4).build()
+        );
     }
 
     private Stream<CryptoData> generateETHTypeTestData() {
-        Calendar calendar1 = Calendar.getInstance();
-        calendar1.setTimeInMillis(101);
-        Calendar calendar2 = Calendar.getInstance();
-        calendar2.setTimeInMillis(102);
-        Calendar calendar3 = Calendar.getInstance();
-        calendar3.setTimeInMillis(103);
-        Calendar calendar4 = Calendar.getInstance();
-        calendar4.setTimeInMillis(104);
-        return List.of(
-                CryptoData.builder().price(31D).symbol("ETH").timestamp(calendar1).build(),
-                CryptoData.builder().price(3123D).symbol("ETH").timestamp(calendar2).build(),
-                CryptoData.builder().price(31234D).symbol("ETH").timestamp(calendar3).build(),
-                CryptoData.builder().price(312D).symbol("ETH").timestamp(calendar4).build()
-        ).stream();
+
+        LocalDateTime date1 = LocalDateTime.of(2022,2,3,1,0);
+        LocalDateTime date2 = LocalDateTime.of(2022,2,3,2,0);
+        LocalDateTime date3 = LocalDateTime.of(2022,2,3,3,0);
+        LocalDateTime date4 = LocalDateTime.of(2022,2,3,4,0);
+
+        return Stream.of(
+                CryptoData.builder().price(31D).symbol("ETH").timestamp(date1).build(),
+                CryptoData.builder().price(3123D).symbol("ETH").timestamp(date2).build(),
+                CryptoData.builder().price(31234D).symbol("ETH").timestamp(date3).build(),
+                CryptoData.builder().price(312D).symbol("ETH").timestamp(date4).build()
+        );
     }
 
     private void assertCryptoDataNotNull(CryptoData data) {
@@ -116,5 +119,11 @@ public class DataAnalysisServiceImplTest {
         assertNotNull(data.getPrice());
         assertNotNull(data.getSymbol());
         assertNotNull(data.getTimestamp());
+    }
+
+    private void assertCryptoNormalizedPricesDataNotNull(CryptoNormalizedPricesData data){
+        assertNotNull(data);
+        assertNotNull(data.getNormalizedPrice());
+        assertNotNull(data.getSymbol());
     }
 }
