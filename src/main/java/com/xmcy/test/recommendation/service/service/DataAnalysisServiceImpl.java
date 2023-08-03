@@ -27,7 +27,8 @@ public class DataAnalysisServiceImpl implements DataAnalysisService{
         return dataStream.min(Comparator.comparing(CryptoData::getTimestamp)).orElseThrow();
     }
 
-    public List<CryptoNormalizedPricesData> getOrderedNormalizedRange(Stream<CryptoData>... dataStream){
+    @SafeVarargs
+    public final List<CryptoNormalizedPricesData> getOrderedNormalizedRange(Stream<CryptoData>... dataStream){
         List<CryptoNormalizedPricesData> analyzedData =
                 concatStreams(dataStream)
                 .collect(Collectors.groupingBy(CryptoData::getSymbol))
@@ -45,31 +46,14 @@ public class DataAnalysisServiceImpl implements DataAnalysisService{
 
         return analyzedData;
     }
-
-    public CryptoNormalizedPricesData getMaxNormalizedRangeForParticularDay(LocalDateTime expectedDate, Stream<CryptoData>... dataStream){
-        LocalDateTime from = LocalDateTime.of(
-                expectedDate.getYear(),
-                expectedDate.getMonth(),
-                expectedDate.getDayOfMonth(),
-                0,
-                0,
-                0);
-
-        LocalDateTime to = LocalDateTime.of(
-                expectedDate.getYear(),
-                expectedDate.getMonth(),
-                expectedDate.getDayOfMonth(),
-                0,
-                0,
-                0)
-                .plusDays(1);
-
+    @SafeVarargs
+    public final CryptoNormalizedPricesData getMaxNormalizedRangeForTimeRange(LocalDateTime from, LocalDateTime to, Stream<CryptoData>... dataStream){
         Stream<CryptoData> outfilteredData = concatStreams(dataStream)
                 .filter(entry -> entry.getTimestamp().isAfter(from)
                         && entry.getTimestamp().isBefore(to));
         return getOrderedNormalizedRange(outfilteredData)
                 .stream()
-                .max(Comparator.comparing(CryptoNormalizedPricesData::getNormalizedPrice))
+                .findFirst()
                 .orElseThrow();
     }
 

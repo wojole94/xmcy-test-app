@@ -12,8 +12,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-public class DataAnalysisServiceImplTest {
+class DataAnalysisServiceImplTest {
 
     DataAnalysisService daService;
 
@@ -63,11 +62,13 @@ public class DataAnalysisServiceImplTest {
 
     @Test
     void getMaxNormalizedRangeForParticularDay_whenDataAvailable_selectLatestRecord() {
-        LocalDateTime expectedDate = LocalDateTime.of(2022,2,3,0,0);
+        LocalDateTime fromDate = LocalDateTime.of(2022,2,3,0,0);
+        LocalDateTime toDate = LocalDateTime.of(2022,2,3,0,0).plusDays(1);
 
-        CryptoNormalizedPricesData result = daService.getMaxNormalizedRangeForParticularDay(expectedDate, generateDOGETypeTestData(), generateBTCTypeTestData(), generateETHTypeTestData());
+        CryptoNormalizedPricesData result = daService.getMaxNormalizedRangeForTimeRange(fromDate, toDate, generateDOGETypeTestData(), generateBTCTypeTestData(), generateETHTypeTestData());
 
         assertCryptoNormalizedPricesDataNotNull(result);
+        assertEquals("BTC", result.getSymbol());
     }
 
     private Stream<CryptoData> generateBTCTypeTestData() {

@@ -4,7 +4,6 @@ import com.xmcy.test.recommendation.service.model.CryptoData;
 import com.xmcy.test.recommendation.service.model.CryptoNormalizedPricesData;
 
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -19,5 +18,5 @@ public interface DataAnalysisService {
 
     List<CryptoNormalizedPricesData> getOrderedNormalizedRange(Stream<CryptoData>... dataStream);
 
-    CryptoNormalizedPricesData getMaxNormalizedRangeForParticularDay(LocalDateTime expectedDate, Stream<CryptoData>... dataStream);
+    public CryptoNormalizedPricesData getMaxNormalizedRangeForTimeRange(LocalDateTime from, LocalDateTime to, Stream<CryptoData>... dataStream);
 }
