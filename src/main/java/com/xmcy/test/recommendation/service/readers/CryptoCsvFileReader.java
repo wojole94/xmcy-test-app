@@ -20,10 +20,18 @@ public class CryptoCsvFileReader implements CryptoInputDataReader {
     private static final String FILE_NAME_SUFFIX = "_values.csv";
     private static final String EXCEPTION_MESSAGE = "Cannot find data source!";
 
+    /**
+     * Reads all the prices from particular csv file as stream for further processing
+     *
+     */
     public Stream<CryptoData> openData(String cryptoName) {
         return openData(getFile(cryptoName));
     }
 
+    /**
+     * Reads all the prices from particular csv file as stream for further processing
+     *
+     */
     public Stream<CryptoData> openData(File file){
         FileReader filereader = getFileReader(file);
         CsvToBean<CryptoData> csvReader =
@@ -35,6 +43,10 @@ public class CryptoCsvFileReader implements CryptoInputDataReader {
         return StreamSupport.stream(csvReader.spliterator(), false);
     }
 
+    /**
+     * Reads all the prices from all the csv files as streams for further processing
+     *
+     */
     public List<Stream<CryptoData>> openWholeDataInPath() {
         File[] dir = getAllFilesInDirectory();
         return Arrays.stream(dir)
