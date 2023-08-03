@@ -26,7 +26,15 @@ class DataAnalysisServiceImplTest {
         List<CryptoData> result = daService.getMaxPriceByCurrency(LocalDateTime.MIN, LocalDateTime.MAX, generateBTCTypeTestData());
 
         assertCryptoDataNotNull(result.get(0));
-        assertEquals(11234D, result.get(0).getPrice());
+        assertEquals(21234D, result.get(0).getPrice());
+    }
+
+    @Test
+    void getMaxPrice_whenMultidataAvailable_selectMaxPrice() {
+        List<CryptoData> result = daService.getMaxPriceByCurrency(LocalDateTime.MIN, LocalDateTime.MAX,
+                List.of(generateBTCTypeTestData(), generateDOGETypeTestData()));
+
+        assertMultiDataMaxResult(result);
     }
 
     @Test
@@ -38,11 +46,27 @@ class DataAnalysisServiceImplTest {
     }
 
     @Test
+    void getMinPrice_whenMultiDataAvailable_selectMinPrice() {
+        List<CryptoData> result = daService.getMinPriceByCurrency(LocalDateTime.MIN, LocalDateTime.MAX,
+                List.of(generateBTCTypeTestData(), generateDOGETypeTestData()));
+
+        assertMultiDataMinResult(result);
+    }
+
+    @Test
     void getOldestRecord_whenDataAvailable_selectOldestRecord() {
         List<CryptoData> result = daService.getOldestByCurrency(LocalDateTime.MIN, LocalDateTime.MAX, generateBTCTypeTestData());
 
         assertCryptoDataNotNull(result.get(0));
         assertEquals(11D, result.get(0).getPrice());
+    }
+
+    @Test
+    void getOldestRecord_whenMultiDataAvailable_selectOldestRecord() {
+        List<CryptoData> result = daService.getOldestByCurrency(LocalDateTime.MIN, LocalDateTime.MAX,
+                List.of(generateBTCTypeTestData(), generateDOGETypeTestData()));
+
+        assertMultiDataOldestResult(result);
     }
 
     @Test
@@ -54,14 +78,23 @@ class DataAnalysisServiceImplTest {
     }
 
     @Test
+    void getOldestRecord_whenMultiDataAvailable_selectLatestRecord() {
+        List<CryptoData> result = daService.getLatestByCurrency(LocalDateTime.MIN, LocalDateTime.MAX,
+                List.of(generateBTCTypeTestData(), generateDOGETypeTestData()));
+
+        assertMultiDataLatestResult(result);
+    }
+
+    @Test
     void getOrderedNormalizedRange_whenDataAvailable_getNormalizedValuesPerCrypto() {
         List<CryptoNormalizedPricesData> result = daService.getOrderedNormalizedRange(generateBTCTypeTestData());
 
         result.forEach(this::assertCryptoNormalizedPricesDataNotNull);
+        assertEquals(1020.2727272727273, result.get(0).getNormalizedPrice());
     }
 
     @Test
-    void getMaxNormalizedRangeForParticularDay_whenDataAvailable_selectLatestRecord() {
+    void getMaxNormalizedRangeForParticularDay_whenDataAvailable_selectMaxNormalizedRange() {
         LocalDateTime fromDate = LocalDateTime.of(2022,2,3,0,0);
         LocalDateTime toDate = LocalDateTime.of(2022,2,3,0,0).plusDays(1);
 
@@ -69,6 +102,7 @@ class DataAnalysisServiceImplTest {
 
         assertCryptoNormalizedPricesDataNotNull(result);
         assertEquals("BTC", result.getSymbol());
+        assertEquals(1020.2727272727273, result.getNormalizedPrice());
     }
 
     private Stream<CryptoData> generateBTCTypeTestData() {
@@ -130,5 +164,41 @@ class DataAnalysisServiceImplTest {
         assertNotNull(data);
         assertNotNull(data.getNormalizedPrice());
         assertNotNull(data.getSymbol());
+    }
+
+    private void assertMultiDataMaxResult(List<CryptoData> result){
+        CryptoData btcResult = result.stream().filter(cryptoData -> cryptoData.getSymbol().equals("BTC")).findFirst().get();
+        CryptoData dogeResult = result.stream().filter(cryptoData -> cryptoData.getSymbol().equals("DOGE")).findFirst().get();
+        assertCryptoDataNotNull(btcResult);
+        assertCryptoDataNotNull(dogeResult);
+        assertEquals(11234D, btcResult.getPrice());
+        assertEquals(21234D, dogeResult.getPrice());
+    }
+
+    private void assertMultiDataMinResult(List<CryptoData> result){
+        CryptoData btcResult = result.stream().filter(cryptoData -> cryptoData.getSymbol().equals("BTC")).findFirst().get();
+        CryptoData dogeResult = result.stream().filter(cryptoData -> cryptoData.getSymbol().equals("DOGE")).findFirst().get();
+        assertCryptoDataNotNull(btcResult);
+        assertCryptoDataNotNull(dogeResult);
+        assertEquals(11D, btcResult.getPrice());
+        assertEquals(21D, dogeResult.getPrice());
+    }
+
+    private void assertMultiDataLatestResult(List<CryptoData> result){
+        CryptoData btcResult = result.stream().filter(cryptoData -> cryptoData.getSymbol().equals("BTC")).findFirst().get();
+        CryptoData dogeResult = result.stream().filter(cryptoData -> cryptoData.getSymbol().equals("DOGE")).findFirst().get();
+        assertCryptoDataNotNull(btcResult);
+        assertCryptoDataNotNull(dogeResult);
+        assertEquals(112D, btcResult.getPrice());
+        assertEquals(212D, dogeResult.getPrice());
+    }
+
+    private void assertMultiDataOldestResult(List<CryptoData> result){
+        CryptoData btcResult = result.stream().filter(cryptoData -> cryptoData.getSymbol().equals("BTC")).findFirst().get();
+        CryptoData dogeResult = result.stream().filter(cryptoData -> cryptoData.getSymbol().equals("DOGE")).findFirst().get();
+        assertCryptoDataNotNull(btcResult);
+        assertCryptoDataNotNull(dogeResult);
+        assertEquals(11D, btcResult.getPrice());
+        assertEquals(21D, dogeResult.getPrice());
     }
 }

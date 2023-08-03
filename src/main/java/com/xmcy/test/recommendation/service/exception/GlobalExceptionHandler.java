@@ -37,5 +37,16 @@ public class GlobalExceptionHandler {
                 .build());
     }
 
+    @ExceptionHandler(MalformedInputDataException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseBody
+    public ResponseEntity<CryptoProcessingResult> handleMalformedInputDataException(Exception exception) {
+        List<String> errors = List.of(
+                exception.getMessage()
+        );
+        return ResponseEntity.ofNullable(CryptoProcessingResult.builder()
+                .errors(errors)
+                .build());
+    }
 
 }
