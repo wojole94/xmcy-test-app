@@ -18,44 +18,44 @@ class DataAnalysisServiceImplTest {
 
     @BeforeEach
     void init() {
-        daService = new DataAnalysisServiceImpl();
+        daService = new DataAnalysisService();
     }
 
     @Test
     void getMaxPrice_whenDataAvailable_selectMaxPrice() {
-        CryptoData result = daService.getMaxPrice(generateBTCTypeTestData());
+        List<CryptoData> result = daService.getMaxPriceByCurrency(LocalDateTime.MIN, LocalDateTime.MAX, generateBTCTypeTestData());
 
-        assertCryptoDataNotNull(result);
-        assertEquals(11234D, result.getPrice());
+        assertCryptoDataNotNull(result.get(0));
+        assertEquals(11234D, result.get(0).getPrice());
     }
 
     @Test
     void getMinPrice_whenDataAvailable_selectMinPrice() {
-        CryptoData result = daService.getMinPrice(generateBTCTypeTestData());
+        List<CryptoData> result = daService.getMinPriceByCurrency(LocalDateTime.MIN, LocalDateTime.MAX, generateBTCTypeTestData());
 
-        assertCryptoDataNotNull(result);
-        assertEquals(11D, result.getPrice());
+        assertCryptoDataNotNull(result.get(0));
+        assertEquals(11D, result.get(0).getPrice());
     }
 
     @Test
     void getOldestRecord_whenDataAvailable_selectOldestRecord() {
-        CryptoData result = daService.getOldest(generateBTCTypeTestData());
+        List<CryptoData> result = daService.getOldestByCurrency(LocalDateTime.MIN, LocalDateTime.MAX, generateBTCTypeTestData());
 
-        assertCryptoDataNotNull(result);
-        assertEquals(11D, result.getPrice());
+        assertCryptoDataNotNull(result.get(0));
+        assertEquals(11D, result.get(0).getPrice());
     }
 
     @Test
     void getLatestRecord_whenDataAvailable_selectLatestRecord() {
-        CryptoData result = daService.getLatest(generateBTCTypeTestData());
+        List<CryptoData> result = daService.getLatestByCurrency(LocalDateTime.MIN, LocalDateTime.MAX, generateBTCTypeTestData());
 
-        assertCryptoDataNotNull(result);
-        assertEquals(112D, result.getPrice());
+        assertCryptoDataNotNull(result.get(0));
+        assertEquals(112D, result.get(0).getPrice());
     }
 
     @Test
     void getOrderedNormalizedRange_whenDataAvailable_getNormalizedValuesPerCrypto() {
-        List<CryptoNormalizedPricesData> result = daService.getOrderedNormalizedRange(generateBTCTypeTestData(), generateDOGETypeTestData(), generateETHTypeTestData());
+        List<CryptoNormalizedPricesData> result = daService.getOrderedNormalizedRange(generateBTCTypeTestData());
 
         result.forEach(this::assertCryptoNormalizedPricesDataNotNull);
     }
@@ -65,7 +65,7 @@ class DataAnalysisServiceImplTest {
         LocalDateTime fromDate = LocalDateTime.of(2022,2,3,0,0);
         LocalDateTime toDate = LocalDateTime.of(2022,2,3,0,0).plusDays(1);
 
-        CryptoNormalizedPricesData result = daService.getMaxNormalizedRangeForTimeRange(fromDate, toDate, generateDOGETypeTestData(), generateBTCTypeTestData(), generateETHTypeTestData());
+        CryptoNormalizedPricesData result = daService.getMaxNormalizedRangeForTimeRange(fromDate, toDate, generateBTCTypeTestData());
 
         assertCryptoNormalizedPricesDataNotNull(result);
         assertEquals("BTC", result.getSymbol());
@@ -113,6 +113,10 @@ class DataAnalysisServiceImplTest {
                 CryptoData.builder().price(31234D).symbol("ETH").timestamp(date3).build(),
                 CryptoData.builder().price(312D).symbol("ETH").timestamp(date4).build()
         );
+    }
+
+    private List<Stream<CryptoData>> generateListOfCurrenciesData(){
+        return List.of(generateETHTypeTestData(), generateDOGETypeTestData(), generateBTCTypeTestData());
     }
 
     private void assertCryptoDataNotNull(CryptoData data) {

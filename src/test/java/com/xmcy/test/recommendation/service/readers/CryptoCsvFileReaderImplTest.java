@@ -33,7 +33,7 @@ public class CryptoCsvFileReaderImplTest {
     void readDataIncrementally_whenFileExists_thenReturnWholeData(){
         final String currencyName = "BTC";
 
-        Stream<CryptoData> resultStream = reader.readDataIncrementally(currencyName);
+        Stream<CryptoData> resultStream = reader.openData(currencyName);
 
         assertStreamDataFetched(resultStream);
     }
