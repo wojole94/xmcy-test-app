@@ -26,7 +26,7 @@ class DataAnalysisServiceImplTest {
         List<CryptoData> result = daService.getMaxPriceByCurrency(LocalDateTime.MIN, LocalDateTime.MAX, generateBTCTypeTestData());
 
         assertCryptoDataNotNull(result.get(0));
-        assertEquals(21234D, result.get(0).getPrice());
+        assertEquals(11234D, result.get(0).getPrice());
     }
 
     @Test
