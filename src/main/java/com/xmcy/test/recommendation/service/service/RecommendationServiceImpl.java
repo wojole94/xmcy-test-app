@@ -6,6 +6,7 @@ import com.xmcy.test.recommendation.service.model.CryptoNormalizedPricesData;
 import com.xmcy.test.recommendation.service.model.StatisticsEnum;
 import com.xmcy.test.recommendation.service.readers.CryptoInputDataReader;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -18,8 +19,8 @@ import java.util.stream.Stream;
 @Service
 @RequiredArgsConstructor
 public class RecommendationServiceImpl implements RecommendationService {
-    DataAnalysisService dataAnalysisService;
-    CryptoInputDataReader inputDataReader;
+    @Autowired DataAnalysisService dataAnalysisService;
+    @Autowired CryptoInputDataReader inputDataReader;
     @Override
     public Optional<CryptoProcessingResult> getBasicStatistics(StatisticsEnum type, String cryptoSymbol) {
         Stream<CryptoData> dataStream = inputDataReader.openData(cryptoSymbol);
@@ -30,14 +31,14 @@ public class RecommendationServiceImpl implements RecommendationService {
             case OLDEST -> dataAnalysisService.getOldestByCurrency(LocalDateTime.MIN, LocalDateTime.MAX, dataStream);
         };
 
-        return Optional.empty();
+        return Optional.of(CryptoProcessingResult.builder().searchResults(analysisResult).build());
     }
     @Override
     public Optional<CryptoProcessingResult> getOrderedCryptosByNormalizedRange() {
         List<Stream<CryptoData>> dataStreams = inputDataReader.openWholeDataInPath();
         final List<CryptoNormalizedPricesData> results = dataAnalysisService.getOrderedNormalizedRange(dataStreams);
 
-        return Optional.empty();
+        return Optional.of(CryptoProcessingResult.builder().analysisResults(results).build());
     }
     @Override
     public Optional<CryptoProcessingResult> getHighestNormalizedRangeCryptoForDay(LocalDate date) {
@@ -48,6 +49,6 @@ public class RecommendationServiceImpl implements RecommendationService {
                 LocalDateTime.of(date.plusDays(1), zeroTime),
                 dataStreams);
 
-        return Optional.empty();
+        return Optional.of(CryptoProcessingResult.builder().analysisResults(List.of(result)).build());
     }
 }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.stream.Stream;
 
 public interface CryptoInputDataReader {
-    List<CryptoData> readDataAsWholeBatch(String cryptoName);
     Stream<CryptoData> openData(String cryptoName);
     Stream<CryptoData> openData(File fileName);
     List<Stream<CryptoData>> openWholeDataInPath();

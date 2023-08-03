@@ -2,6 +2,7 @@ package com.xmcy.test.recommendation.service.readers;
 
 import com.opencsv.bean.CsvToBean;
 import com.opencsv.bean.CsvToBeanBuilder;
+import com.xmcy.test.recommendation.service.exception.ExpectedDataTypeNotFoundException;
 import com.xmcy.test.recommendation.service.model.CryptoData;
 import lombok.RequiredArgsConstructor;
 
@@ -15,37 +16,16 @@ import java.util.stream.StreamSupport;
 
 @RequiredArgsConstructor
 public class CryptoCsvFileReader implements CryptoInputDataReader {
-
     private final String csvRootPath;
     private static final String FILE_NAME_SUFFIX = "_values.csv";
-
-    public List<CryptoData> readDataAsWholeBatch(String cryptoName) {
-        FileReader filereader = null;
-        try {
-            filereader = new FileReader(getFilePath(cryptoName));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        CsvToBean<CryptoData> csvReader =
-                new CsvToBeanBuilder<CryptoData>(filereader)
-                        .withType(CryptoData.class)
-                        .withIgnoreLeadingWhiteSpace(true)
-                        .build();
-
-        return csvReader.parse();
-    }
+    private static final String EXCEPTION_MESSAGE = "Cannot find data source!";
 
     public Stream<CryptoData> openData(String cryptoName) {
-        return openData(getFilePath(cryptoName));
+        return openData(getFile(cryptoName));
     }
 
     public Stream<CryptoData> openData(File file){
-        FileReader filereader = null;
-        try {
-            filereader = new FileReader(file);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        FileReader filereader = getFileReader(file);
         CsvToBean<CryptoData> csvReader =
                 new CsvToBeanBuilder<CryptoData>(filereader)
                         .withType(CryptoData.class)
@@ -54,15 +34,34 @@ public class CryptoCsvFileReader implements CryptoInputDataReader {
 
         return StreamSupport.stream(csvReader.spliterator(), false);
     }
+
     public List<Stream<CryptoData>> openWholeDataInPath() {
-        File[] dir = new File(csvRootPath).listFiles();
+        File[] dir = getAllFilesInDirectory();
         return Arrays.stream(dir)
                 .filter(file -> file.isFile() && file.getName().contains(FILE_NAME_SUFFIX))
                 .map(this::openData)
                 .toList();
     }
 
-    private File getFilePath(String cryptoName) {
-        return new File(csvRootPath + cryptoName + FILE_NAME_SUFFIX);
+    private File[] getAllFilesInDirectory() {
+        File[] dir = new File(csvRootPath).listFiles();
+        if (dir == null) throw new ExpectedDataTypeNotFoundException(EXCEPTION_MESSAGE);
+        return dir;
     }
+    private File getFile(String cryptoName) {
+        File file = new File(csvRootPath + cryptoName + FILE_NAME_SUFFIX);
+        if (!file.exists()) throw new ExpectedDataTypeNotFoundException(EXCEPTION_MESSAGE);
+        return file;
+    }
+    private FileReader getFileReader(File file) {
+        FileReader filereader;
+        try {
+            filereader = new FileReader(file);
+        } catch (FileNotFoundException e) {
+            throw new ExpectedDataTypeNotFoundException(EXCEPTION_MESSAGE, e);
+        }
+        return filereader;
+    }
+
+
 }

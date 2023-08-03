@@ -8,7 +8,6 @@ import java.util.Optional;
 
 
 public interface RecommendationService {
-
     Optional<CryptoProcessingResult> getOrderedCryptosByNormalizedRange();
     Optional<CryptoProcessingResult> getBasicStatistics(StatisticsEnum type, String cryptoSymbol);
     Optional<CryptoProcessingResult> getHighestNormalizedRangeCryptoForDay(LocalDate date);

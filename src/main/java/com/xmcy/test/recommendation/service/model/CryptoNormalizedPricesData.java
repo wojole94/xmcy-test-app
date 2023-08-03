@@ -7,6 +7,5 @@ import lombok.Data;
 @Data
 public class CryptoNormalizedPricesData {
     private String symbol;
-
     private Double normalizedPrice;
 }

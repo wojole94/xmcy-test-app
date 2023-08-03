@@ -11,22 +11,13 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-public class CryptoCsvFileReaderImplTest {
+class CryptoCsvFileReaderImplTest {
 
     private CryptoInputDataReader reader;
 
     @BeforeEach
     void init(){
         reader = new CryptoCsvFileReader("data/");
-    }
-
-    @Test
-    void readDataAsWholeBatch_whenFileExists_thenReturnWholeData(){
-        final String currencyName = "BTC";
-
-        List<CryptoData> resultList = reader.readDataAsWholeBatch(currencyName);
-
-        assertBatchDataFetched(resultList);
     }
 
     @Test
@@ -52,7 +43,7 @@ public class CryptoCsvFileReaderImplTest {
     }
 
     private void assertTableWithoutNulls(List<CryptoData> resultList){
-        resultList.stream().forEach(data -> {
+        resultList.forEach(data -> {
             assertNotNull(data.getTimestamp());
             assertNotNull(data.getPrice());
             assertNotNull(data.getSymbol());

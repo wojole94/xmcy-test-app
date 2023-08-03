@@ -11,8 +11,6 @@ import java.util.stream.Stream;
 
 @Service
 public class DataAnalysisService {
-
-    //Pass only streaam for one crypto if for particular one
     public List<CryptoData> getMaxPriceByCurrency(LocalDateTime from, LocalDateTime to, Stream<CryptoData> dataStream) {
         return getMaxPriceByCurrency(from, to, List.of(dataStream));
     }
@@ -26,7 +24,6 @@ public class DataAnalysisService {
                 .stream()
                 .map(cryptoData -> cryptoData.stream().max(Comparator.comparing(CryptoData::getPrice)).orElseThrow())
                 .toList();
-
     }
 
     public List<CryptoData> getMinPriceByCurrency(LocalDateTime from, LocalDateTime to, Stream<CryptoData> dataStream) {
@@ -35,8 +32,8 @@ public class DataAnalysisService {
 
     public List<CryptoData> getMinPriceByCurrency(LocalDateTime from, LocalDateTime to, List<Stream<CryptoData>> dataStream) {
         Stream<CryptoData> concatStreams = concatStreams(dataStream);
-        Stream<CryptoData> outfilteredData = filterTimeframe(concatStreams, from, to);
-        return outfilteredData
+        Stream<CryptoData> filteredData = filterTimeframe(concatStreams, from, to);
+        return filteredData
                 .collect(Collectors.groupingBy(CryptoData::getSymbol))
                 .values()
                 .stream()
@@ -50,8 +47,8 @@ public class DataAnalysisService {
 
     public List<CryptoData> getLatestByCurrency(LocalDateTime from, LocalDateTime to, List<Stream<CryptoData>> dataStream) {
         Stream<CryptoData> concatStreams = concatStreams(dataStream);
-        Stream<CryptoData> outfilteredData = filterTimeframe(concatStreams, from, to);
-        return outfilteredData
+        Stream<CryptoData> filteredData = filterTimeframe(concatStreams, from, to);
+        return filteredData
                 .collect(Collectors.groupingBy(CryptoData::getSymbol))
                 .values()
                 .stream()
@@ -65,8 +62,8 @@ public class DataAnalysisService {
 
     public List<CryptoData> getOldestByCurrency(LocalDateTime from, LocalDateTime to, List<Stream<CryptoData>> dataStream) {
         Stream<CryptoData> concatStreams = concatStreams(dataStream);
-        Stream<CryptoData> outfilteredData = filterTimeframe(concatStreams, from, to);
-        return outfilteredData
+        Stream<CryptoData> filteredData = filterTimeframe(concatStreams, from, to);
+        return filteredData
                 .collect(Collectors.groupingBy(CryptoData::getSymbol))
                 .values()
                 .stream()
